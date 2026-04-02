@@ -10,13 +10,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import LunnaAvatar from './LunnaAvatar';
 import './Onboarding.css';
 
-// ── Inline SVG arrow used inside the send button ──
-const ChevronRight = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-    stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="9 18 15 12 9 6" />
-  </svg>
-);
+// Win2K style OK arrow label
+const OkLabel = () => <span style={{ fontSize: 12, fontFamily: 'Tahoma, Arial, sans-serif' }}>OK &gt;</span>;
 
 // Phrases that signal the user wants to finish adding tasks and start the session
 const DONE_WORDS = [
@@ -149,57 +144,73 @@ const Onboarding = ({ onStart }) => {
   return (
     <div className="ob-screen">
       <div className="ob-card">
-        <h1 className="ob-title">lunna</h1>
+        {/* ── Win2K title bar ── */}
+        <h1 className="ob-title" />
 
-        {/* ── Message thread ── */}
-        <div className="ob-messages">
-          {messages.map((msg, i) => (
-            <div key={i} className={`ob-msg ob-msg--${msg.sender}`}>
-              {msg.sender === 'lunna' ? (
-                <div className="ob-lunna-row">
-                  <LunnaAvatar size={52} />
-                  <p className="ob-lunna-text">{msg.text}</p>
-                </div>
-              ) : (
-                <p className="ob-user-text">{msg.text}</p>
-              )}
+        {/* ── Window client area ── */}
+        <div className="ob-window-body">
+          {/* ── Message thread ── */}
+          <div className="ob-messages">
+            {messages.map((msg, i) => (
+              <div key={i} className={`ob-msg ob-msg--${msg.sender}`}>
+                {msg.sender === 'lunna' ? (
+                  <div className="ob-lunna-row">
+                    <LunnaAvatar size={40} />
+                    <p className="ob-lunna-text">{msg.text}</p>
+                  </div>
+                ) : (
+                  <p className="ob-user-text">{msg.text}</p>
+                )}
+              </div>
+            ))}
+
+            {/* Typing indicator while Lunna is "composing" */}
+            {isTyping && (
+              <div className="ob-lunna-row ob-typing">
+                <LunnaAvatar size={32} />
+                <span className="ob-typing-label">Lunna is typing...</span>
+              </div>
+            )}
+
+            {/* Invisible anchor — scrolled into view to keep chat at bottom */}
+            <div ref={bottomRef} />
+          </div>
+
+          {/* ── Input row ── */}
+          <div className="ob-input-area">
+            <label className="ob-input-label">Message:</label>
+            <div className="ob-input-row">
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Type your message here..."
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKey}
+                disabled={inputDisabled}
+              />
+              <button
+                className={`ob-send-btn${input.trim() && !inputDisabled ? ' ob-send-btn--visible' : ' ob-send-btn--hidden'}`}
+                onClick={handleSubmit}
+                disabled={!input.trim() || inputDisabled}
+              >
+                <OkLabel />
+              </button>
             </div>
-          ))}
-
-          {/* Typing indicator while Lunna is "composing" */}
-          {isTyping && (
-            <div className="ob-lunna-row ob-typing">
-              <LunnaAvatar size={40} />
-              <span className="ob-typing-label">typing..</span>
-            </div>
-          )}
-
-          {/* Invisible anchor — scrolled into view to keep chat at bottom */}
-          <div ref={bottomRef} />
+          </div>
         </div>
 
-        {/* ── Input row ── */}
-        <div className="ob-input-area">
-          <div className="ob-input-row">
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="type here.."
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKey}
-              disabled={inputDisabled}
-            />
-            {/* Send button — always in the DOM (keeps input size stable),
-                visible + animated only when the user has typed something */}
-            <button
-              className={`ob-send-btn${input.trim() && !inputDisabled ? ' ob-send-btn--visible' : ' ob-send-btn--hidden'}`}
-              onClick={handleSubmit}
-              disabled={!input.trim() || inputDisabled}
-            >
-              <ChevronRight />
-            </button>
-          </div>
+        {/* ── Win2K status bar ── */}
+        <div className="ob-statusbar">
+          <span className="ob-statusbar-panel">
+            {step === 'name' && 'Enter your name'}
+            {step === 'goal' && 'Enter your goal for today'}
+            {step === 'tasks' && 'Add tasks or say "Let\'s go"'}
+            {step === 'done' && 'Session starting...'}
+          </span>
+          <span className="ob-statusbar-panel" style={{ marginLeft: 'auto' }}>
+            Lunna v1.0
+          </span>
         </div>
       </div>
     </div>
