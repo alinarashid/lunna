@@ -1,0 +1,496 @@
+/* ═══════════════════════════════════════════════════════
+   MAIN APP — BENTO GRID LAYOUT
+   Three-column grid that fills the full viewport.
+   Column order: left (calendar + Lunna) · center (timer) · right (todo)
+═══════════════════════════════════════════════════════ */
+
+/* Full-viewport screen wrapper */
+.ma-screen {
+  height: 100vh;
+  background-color: #eff5c0;
+  padding: 16px 16px 0 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Footer credit bar ── */
+.ma-footer {
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: rgba(80, 90, 40, 0.55);
+  letter-spacing: 0.6px;
+  padding: 6px 0;
+  flex-shrink: 0;
+}
+
+/* Three-column grid — center column is wider than the side columns */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.45fr 1fr;
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+}
+
+/* Each column is a flex container stacking cards vertically */
+.bento-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0; /* allows flex children to shrink below their content size */
+}
+
+/* ═══════════════════════════════════════
+   SHARED CARD BASE
+   All bento cards extend this class.
+═══════════════════════════════════════ */
+.bento-card {
+  border-radius: 24px;
+  padding: 20px;
+}
+
+/* ═══════════════════════════════════════
+   LEFT COLUMN — Calendar (natural height) + Lunna (fills remaining space)
+═══════════════════════════════════════ */
+.bento-left {
+  height: 100%;
+}
+
+/* Calendar card: don't stretch, take only what the content needs */
+.bento-left > .cal-outer {
+  flex-shrink: 0;
+}
+
+/* Lunna card: grow to fill all space below the calendar */
+.bento-left > .lunna-card {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ─────────────────────────────────────
+   LUNNA WIDGET CARD  (blue)
+───────────────────────────────────── */
+.lunna-card {
+  background: #8fb3f0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Card title: "lunna ✦ {name}" */
+.lunna-card-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 28px;
+  color: #f5f5d5;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+/* Scrollable message + chat area */
+.lunna-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: none; /* Firefox */
+}
+.lunna-body::-webkit-scrollbar { display: none; }
+
+/* Row containing Lunna's avatar + rotating quip */
+.lunna-msg-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* Rotating motivational quip text */
+.lunna-quip {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  color: #f5f5e0;
+  margin: 6px 0 0;
+  line-height: 1.45;
+}
+
+/* Individual chat message bubble */
+.lunna-chat-msg {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 14px;
+  padding: 6px 12px;
+  max-width: 90%;
+}
+
+/* User's message — right-aligned semi-transparent bubble */
+.lunna-chat-msg--user {
+  background: rgba(255, 255, 255, 0.22);
+  color: #f5f5e0;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+/* Lunna's reply — no background, left-aligned */
+.lunna-chat-msg--lunna {
+  color: #f5f5e0;
+}
+
+/* "typing.." indicator shown while waiting for the API response */
+.lunna-typing-label {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: rgba(245, 245, 224, 0.7);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Input area pinned to the bottom of the lunna card */
+.lunna-input-area {
+  flex-shrink: 0;
+}
+
+/* Mint pill containing the text input + send button */
+.lunna-input-row {
+  display: flex;
+  align-items: center;
+  background: #a8d5b5;
+  border-radius: 50px;
+  padding: 6px 6px 6px 16px;
+  gap: 6px;
+}
+
+.lunna-input-row input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  color: rgba(30, 60, 40, 0.8);
+}
+
+.lunna-input-row input::placeholder {
+  color: rgba(30, 60, 40, 0.45);
+  font-weight: 700;
+}
+
+/* ── Shared send button (primary) ──
+   Used in the Lunna widget. Light green = primary action. */
+.send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #6dbf8a;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.send-btn:hover { background: #4fa872; }
+
+/* Pop-in animation — same as onboarding send button */
+@keyframes pop-in {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.send-btn--visible {
+  animation: pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.send-btn--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0);
+}
+
+/* ═══════════════════════════════════════
+   CENTER COLUMN — Timer, Settings, Music
+═══════════════════════════════════════ */
+.bento-center {
+  height: 100%;
+}
+
+/* ── Session name pill (fixed height, clickable to rename) ── */
+/* Session name pill — mint like all input boxes */
+.session-name-pill {
+  background: #a8d5b5;
+  border-radius: 50px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.session-name-pill span {
+  font-family: 'Fredoka One', cursive;
+  font-size: 24px;
+  color: rgba(30, 60, 40, 0.85);
+  letter-spacing: 0.5px;
+}
+
+/* "edit" — minimal faded text, absolutely positioned to the right edge */
+.session-name-edit {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: rgba(30, 60, 40, 0.45);
+  padding: 0 4px;
+  position: absolute;
+  right: 20px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.session-name-edit:hover { color: rgba(30, 60, 40, 0.85); }
+
+/* "done" — green circle with white checkmark */
+.session-name-done {
+  background: #6dbf8a;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, transform 0.15s;
+}
+.session-name-done:hover { background: #4fa872; transform: scale(1.08); }
+
+/* Inline text input — shown in edit mode */
+.session-name-input {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'Fredoka One', cursive;
+  font-size: 24px;
+  color: rgba(30, 60, 40, 0.85);
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+  caret-color: rgba(30, 60, 40, 0.7);
+}
+
+/* ── Timer card — grows to fill available center space ── */
+.timer-card {
+  background: #f5d345; /* yellow for work sessions */
+  text-align: center;
+  padding: 24px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Timer card turns blue during break sessions */
+.timer-card--break {
+  background: #8fb3f0;
+}
+
+/* Large countdown display */
+.timer-display {
+  font-family: 'Fredoka One', cursive;
+  font-size: 96px;
+  color: white;
+  letter-spacing: 4px;
+  line-height: 1;
+}
+
+/* Progress bar track (full width, below the time) */
+.timer-progress-track {
+  margin: 18px 0 0;
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Progress bar fill — animates smoothly each second */
+.timer-progress-bar {
+  height: 100%;
+  background: #2a5c3a;
+  border-radius: 10px;
+  transition: width 1s linear;
+}
+
+/* ── Timer button rows ── */
+.timer-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Base timer button */
+.tbtn {
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  padding: 12px 36px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+}
+.tbtn:hover  { transform: translateY(-2px); }
+.tbtn:active { transform: translateY(0); opacity: 0.85; }
+
+.tbtn--start { background: #6dbf8a; color: white; }  /* start / pause — primary */
+.tbtn--pause { background: #f0a8d0; color: white; }  /* reset — secondary */
+.tbtn--break { background: #f0a8d0; color: white; }  /* start break — secondary */
+.tbtn--skip  { background: #f0a8d0; color: white; }  /* skip break — secondary */
+
+/* ── Settings card (duration + break sliders) ── */
+.settings-card {
+  background: #f0a52a;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 24px;
+  flex-shrink: 0;
+}
+
+/* One row per slider: label + slider side by side */
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setting-label {
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+/* ─────────────────────────────────────
+   CUSTOM SLIDER  (.cslider-*)
+   Used by duration, break, AND the music volume slider.
+   The native <input type="range"> is invisible on top;
+   the visual track + thumb are rendered below it.
+───────────────────────────────────── */
+
+/* Outer wrapper — positions the visual track and the native input on top of each other */
+.cslider-outer {
+  flex: 1;
+  position: relative;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Small "min" label after the slider — subtle, doesn't crowd */
+.cslider-unit {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
+  flex-shrink: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Coloured track bar — background gradient is set inline via JS */
+.cslider-track {
+  flex: 1;
+  height: 10px;
+  border-radius: 10px;
+  position: relative;
+}
+
+/* Circular thumb with the value label inside */
+.cslider-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* clicks fall through to the native input */
+}
+
+.cslider-thumb span {
+  font-family: 'Fredoka One', cursive;
+  font-size: 11px;
+  color: white;
+  line-height: 1;
+}
+
+/* Transparent native range input — sits on top of the visual elements */
+.cslider-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+/* ═══════════════════════════════════════
+   RIGHT COLUMN — To-do list fills full height
+═══════════════════════════════════════ */
+.bento-right {
+  height: 100%;
+}
+
+/* Purple todo card — stretches to fill the column */
+.todo-card {
+  background: #c8a8f0;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   Below 900 px, collapse to a single column
+   and allow the page to scroll vertically.
+═══════════════════════════════════════ */
+@media (max-width: 900px) {
+  .ma-screen {
+    height: auto;
+    overflow: auto;
+  }
+  .bento-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .bento-col { height: auto; }
+  /* Remove flex-shrink overrides so cards size to their content on mobile */
+  .bento-left > .cal-outer,
+  .bento-left > .lunna-card { flex: none; }
+  .timer-card { flex: none; min-height: 200px; }
+  .timer-display { font-size: 64px; }
+  .todo-card { height: 400px; }
+}

@@ -1,0 +1,110 @@
+/* ═══════════════════════════════════════
+   MUSIC PLAYER CARD
+   Sits at the bottom of the center bento column.
+   The .cslider-* classes used for the volume slider
+   are defined in MainApp.css and shared across
+   the duration/break sliders and this volume slider.
+═══════════════════════════════════════ */
+
+/* Purple card — extends .bento-card from MainApp.css */
+.music-card {
+  background: #b87fd4;
+  flex-shrink: 0;
+  padding: 14px 18px;
+}
+
+/* The YouTube iframe is hidden; we use it only for audio via postMessage */
+.music-iframe {
+  display: none;
+}
+
+/* Inner flex column: track name → controls → volume */
+.music-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Track name row ── */
+.music-track-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  color: #f5f0ff;
+}
+
+/* Status dot — grey when paused, animated yellow when playing */
+.music-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+.music-dot--playing {
+  background: #f5d345;
+  box-shadow: 0 0 6px #f5d345;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.5); opacity: 0.65; }
+}
+
+/* ── Playback controls row ── */
+.music-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Base button reset shared by all music buttons */
+.music-btn {
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.15s, opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.music-btn:hover  { transform: scale(1.12); }
+.music-btn:active { opacity: 0.75; transform: scale(0.95); }
+
+/* Large play/pause button — primary action */
+.music-btn--play {
+  width: 44px;
+  height: 44px;
+  background: #6dbf8a;
+}
+.music-btn--play:hover { background: #4fa872; }
+
+/* Smaller prev/next buttons — secondary action */
+.music-btn--sm {
+  width: 32px;
+  height: 32px;
+  background: #f0a8d0;
+}
+.music-btn--sm:hover { background: #e890be; }
+
+/* ── Volume slider row ── */
+.music-vol-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.music-vol-label {
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  color: white;
+  letter-spacing: 0.5px;
+}

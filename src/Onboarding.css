@@ -1,0 +1,174 @@
+/* ═══════════════════════════════════════
+   ONBOARDING SCREEN
+   Full-viewport centred layout.
+═══════════════════════════════════════ */
+.ob-screen {
+  min-height: 100vh;
+  background-color: #eff5c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ── Card (blue bubble) ── */
+.ob-card {
+  background: #8fb3f0;
+  border-radius: 28px;
+  padding: 36px 36px 28px;
+  width: 100%;
+  max-width: 600px;
+  min-height: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* App / mascot name at the top of the card */
+.ob-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 46px;
+  color: #f5f5d5;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+/* ─────────────────────────────────────
+   MESSAGE THREAD
+───────────────────────────────────── */
+.ob-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  min-height: 160px;
+  max-height: 320px;
+  padding-right: 4px;
+  scrollbar-width: none; /* Firefox */
+}
+.ob-messages::-webkit-scrollbar { display: none; }
+
+/* Row that holds the avatar + Lunna's message text */
+.ob-lunna-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+/* Lunna's chat bubble text */
+.ob-lunna-text {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 19px;
+  color: #f5f5e0;
+  line-height: 1.5;
+  white-space: pre-line; /* respects \n in message strings */
+  margin: 6px 0 0;
+}
+
+/* User's chat bubble (right-aligned) */
+.ob-user-text {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #f5f5e0;
+  background: rgba(255, 255, 255, 0.22);
+  padding: 10px 18px;
+  border-radius: 20px;
+  align-self: flex-end;
+  margin-left: auto;
+  max-width: 78%;
+  text-align: right;
+  display: block;
+}
+
+/* ── Typing indicator ── */
+.ob-typing {
+  opacity: 0.75;
+}
+
+.ob-typing-label {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #f5f5e0;
+  margin-top: 10px;
+}
+
+/* ─────────────────────────────────────
+   INPUT ROW
+───────────────────────────────────── */
+.ob-input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Mint pill that contains the text field + send button */
+.ob-input-row {
+  display: flex;
+  align-items: center;
+  background: #a8d5b5;
+  border-radius: 50px;
+  padding: 8px 8px 8px 22px;
+  gap: 8px;
+}
+
+.ob-input-row input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  color: rgba(30, 60, 40, 0.8);
+}
+
+.ob-input-row input::placeholder {
+  color: rgba(30, 60, 40, 0.45);
+  font-weight: 700;
+}
+
+.ob-input-row input:disabled {
+  opacity: 0.5;
+}
+
+/* Pop-in keyframe — button scales up from nothing when it appears */
+@keyframes pop-in {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Round primary send button */
+.ob-send-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #6dbf8a;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.ob-send-btn:hover { background: #4fa872; }
+
+/* Visible state — pops in with a bounce */
+.ob-send-btn--visible {
+  animation: pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Hidden state — invisible but still takes up space so input stays the same width */
+.ob-send-btn--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0);
+}

@@ -1,0 +1,101 @@
+/* app-wrapper
+   Full-height container that wraps every screen.
+   Sets the app background colour so the page never shows bare white. */
+.app-wrapper {
+  min-height: 100vh;
+  background-color: #eff5c0;
+}
+
+/* ── Loading / transition screen ── */
+.loading-screen {
+  min-height: 100vh;
+  background-color: #8fb3f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  animation: screen-fade-out 0.7s ease-in 7.3s forwards;
+}
+
+/* Mascot: bigger, fades in, spins once, lands with bounce */
+.loading-mascot {
+  width: 220px;
+  height: 220px;
+  object-fit: contain;
+  animation:
+    mascot-fade-spin 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    mascot-float 2s ease-in-out 1.2s infinite;
+}
+
+/* 1. Fade in from small + spin 360° */
+@keyframes mascot-fade-spin {
+  0%   { opacity: 0; transform: scale(0.4) rotate(0deg); }
+  60%  { opacity: 1; transform: scale(1.12) rotate(340deg); }
+  100% { opacity: 1; transform: scale(1) rotate(360deg); }
+}
+
+/* 2. Gentle float after landing */
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* 3. Whole screen fades out smoothly — content fades first, bg last */
+@keyframes screen-fade-out {
+  0%   { opacity: 1; transform: scale(1); }
+  60%  { opacity: 0; transform: scale(1.03); }
+  100% { opacity: 0; transform: scale(1.03); }
+}
+
+/* ── Message stack ── */
+.loading-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 120px;
+}
+
+/* Every message slides up gently when it first appears */
+.loading-msg {
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  letter-spacing: 0.4px;
+  animation: msg-in 0.4s ease both;
+}
+
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Current (latest) message — full white, full size */
+.loading-msg--active {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 23px;
+}
+
+/* Previous messages — faded white and smaller */
+.loading-msg--done {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 17px;
+  transition: all 0.4s ease;
+}
+
+/* Blinking cursor shown while a message is still typing */
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: rgba(255, 255, 255, 0.8);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  animation: cursor-blink 0.7s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
